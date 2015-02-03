@@ -77,7 +77,7 @@ public class HttpRequest extends Thread {
                         ContentBody = sb.toString();
                         ContentLengthLine = (new Integer(ContentBody.length()).toString()) + "\r\n";
                     } else {
-                        StatusLine = "HTTP/1.0 200 OK\r\n";
+                        StatusLine = "HTTP/1.0 400 OK\r\n";
                         ContentTypeLine = "Content-type: text/html\r\n";
                         ContentBody = "<HTML>"
                                 + "<HEAD><TITLE>404 Not Found</TITLE></HEAD>"
@@ -86,8 +86,8 @@ public class HttpRequest extends Thread {
                         ContentLengthLine = (new Integer(ContentBody.length()).toString()) + "\r\n";
                     }
 
-                    out.println("HTTP/1.1 200 OK");
-                    out.println("Content-Type: text/html");
+                    out.print(StatusLine);
+                    out.print(ContentTypeLine);
                     out.println("Content-Length: " + ContentBody.length());
                     out.println();
                     out.println(ContentBody);//Aqui va el response
