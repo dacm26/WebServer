@@ -11,9 +11,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,12 +23,10 @@ import java.util.logging.Logger;
  */
 public class HttpRequest extends Thread {
 
-    private ServerSocket server;
-    private ArrayList<Socket> requests;
+    private Socket socket;
 
-    public HttpRequest(ServerSocket server) throws Exception {
-        this.server = server;
-        this.requests=new ArrayList<>();
+    public HttpRequest(Socket socket) throws Exception {
+        this.socket = socket;
 
     }
 
@@ -37,19 +34,12 @@ public class HttpRequest extends Thread {
     public void run() {
         DataInputStream din = null;
         PrintWriter out = null;
-        Socket ClientConn;
         try {
-            //Revisar thread
-
+            din = new DataInputStream(this.socket.getInputStream());
+            out = new PrintWriter(this.socket.getOutputStream());
             while (true) {
-                System.out.println("Esperando Clientes....");
-                ClientConn=this.server.accept();
-                this.requests.add(ClientConn);
-                System.out.println("Puerto: " + ClientConn.getPort());
-                din = new DataInputStream(ClientConn.getInputStream());
-                out = new PrintWriter(ClientConn.getOutputStream());
                 String request = din.readLine().trim();
-                System.out.println("Request: " + request);
+                //System.out.println("Request: " + request);
                 StringTokenizer st = new StringTokenizer(request);
                 String header = st.nextToken();
                 String path = "./src/resources/";
@@ -86,9 +76,6 @@ public class HttpRequest extends Thread {
                         sb.append("\r\n");
                         ContentBody = sb.toString();
                         ContentLengthLine = (new Integer(ContentBody.length()).toString()) + "\r\n";
-                        /*
-                         ContentLengthLine = "Content-Length: " + (new Integer(fin.available()).toString());
-                         /*Aqui tiene que ir el archivo html*/
                     } else {
                         StatusLine = "HTTP/1.0 200 OK\r\n";
                         ContentTypeLine = "Content-type: text/html\r\n";
@@ -106,15 +93,16 @@ public class HttpRequest extends Thread {
                     out.println(ContentBody);//Aqui va el response
                     out.flush();
 
-                    out.close();
+                    
 
                 }
-                ClientConn.close();
+
             }
 
         } catch (IOException ex) {
             Logger.getLogger(HttpRequest.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
+        } catch(NoSuchElementException ex){
+        }finally {
             try {
                 din.close();
                 out.close();
