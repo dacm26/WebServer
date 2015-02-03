@@ -5,8 +5,10 @@
  */
 package httpServer;
 
+import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -14,22 +16,16 @@ import java.net.Socket;
  */
 public class httpServer {
 
-    public static void main(String args[]) throws Exception {
-        ServerSocket soc = new ServerSocket(8080);
-         while (true) {
-         Socket inSoc = soc.accept();
-         HttpRequest request = new HttpRequest(inSoc);
-         request.process();
-         }
-        /*BufferedReader bf = null;
-        bf = new BufferedReader(new InputStreamReader(new FileInputStream("./src/resources/index.html")));
-        String line;
-        do {
-            line = bf.readLine();
-            System.out.println(line);
-        } while (line != null);
-        bf.close();*/
-        
+    public static void main(String args[]) {
+        ServerSocket serverSocket;
+        try {
+            serverSocket = new ServerSocket(8080);
+            new HttpRequest(serverSocket).start();
 
+        } catch (IOException ex) {
+            Logger.getLogger(httpServer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(httpServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
