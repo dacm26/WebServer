@@ -61,8 +61,8 @@ public class HttpRequest extends Thread {
                     String ContentBody = null;
 
                     if (fileExist) {
-                        StatusLine = "HTTP/1.0 200 OK";
-                        ContentTypeLine = "Content-type: text/html";
+                        StatusLine = "HTTP/1.0 200 OK\r\n";
+                        ContentTypeLine = "Content-type: text/html\r\n";
                         BufferedReader bf = null;
                         bf = new BufferedReader(new InputStreamReader(fin));
                         String line;
